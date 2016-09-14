@@ -22,43 +22,39 @@ n=$(basename $0)
 v=$ID_VENDOR_ID
 m=$ID_MODEL_ID
 
-if [ -f "$rules" -a -n "$v" -a -n "$m" ]
+if [ -f "$rules" ]
 then
   port=$(echo "$DEVPATH" | sed -rn 's,^/devices/platform/soc/[^/]+/usb[^/]+/[^/]+/([^/]+)/.*,\1,p')
   if [ -n "$port" ]
   then
-    cmd=$(sed -rn "/^$v:$m /{s/[^ ]+ //;p;q}" "$rules")
-    if [ -n "$cmd" ] && grep -q "^$port " "$rules"
-    then
-      case "$ACTION" in
-        add)
-          [ -x "$led" ] && $led busy $port
-          export port n v m cmd led
-          echo "$0 docmd" | at now
-          ;;
-        remove)
-          logger -t $n "free $port"
-          [ -x "$led" ] && $led free $port
-          ;;
-        change)
-          logger -t $n "change $port"
-          ;;
-        *)
-          logger -t $n "unknown action $ACTION"
-          ;;
-      esac
-    else # другая флешка или другой порт
-      case "$ACTION" in
-        add)
-          logger -t $n "foreign $port"
-          [ -x "$led" ] && $led busy $port
-          ;;
-        remove)
-          logger -t $n "free $port"
-          [ -x "$led" ] && $led free $port
-          ;;
-      esac
-    fi
+    case "$ACTION" in
+      add)
+        if [ -n "$v" -a -n "$m" ]
+        then
+          cmd=$(sed -rn "/^$v:$m /{s/[^ ]+ //;p;q}" "$rules")
+          if [ -n "$cmd" ] && grep -q "^$port " "$rules"
+          then
+            [ -x "$led" ] && $led busy $port
+            export port n v m cmd led
+            echo "$0 docmd" | at now
+            exit 0
+          fi
+        fi
+        # другая флешка или неизвестный порт
+        logger -t $n "foreign $port"
+        [ -x "$led" ] && $led busy $port
+        ;;
+      remove)
+        logger -t $n "free $port"
+        [ -x "$led" ] && $led free $port
+        ;;
+      change)
+        logger -t $n "change $port"
+        ;;
+      *)
+        logger -t $n "unknown action $ACTION"
+        ;;
+    esac
   fi
 fi
 
