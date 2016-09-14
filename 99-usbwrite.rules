@@ -1,0 +1,2 @@
+SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", RUN+="/var/local/usbwriter/udev.monitor"
+

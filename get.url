@@ -1,0 +1,2 @@
+path=$(curl -s http://mirrordirector.raspbian.org/raspbian/dists/jessie/main/binary-armhf/Packages.gz | gunzip | sed -n '/^Package: at$/,/^Filename:/{/^Filename: /{s/.* //p;q}}')
+[ -n "$path" ] && echo "http://mirrordirector.raspbian.org/raspbian/$path"

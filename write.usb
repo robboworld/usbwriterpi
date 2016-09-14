@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+usage() {
+	echo "использование: $0 файл устройство"
+	echo "устройство можно задать в любом виде:"
+	echo "/dev/sdb или sdb или просто b"
+}
+
+[ $# -eq 2 ] || { usage; exit 1; }
+
+file=$1
+
+if ! [ -f "${file}" ]; then
+	echo "${file} не существует"
+	usage
+	exit 1
+fi
+
+base=$(basename $2)
+
+if [ -b "/dev/sd${base}" ]; then
+	dev=/dev/sd${base}
+elif [ -b "/dev/${base}" ]; then
+	dev=/dev/${base}
+else
+	echo "ошибка: не обнаружено ни одно блочное устройство: /dev/sd${base} /dev/${base}"
+	usage
+	exit 1
+fi
+
+if [[ "${file}" == *.gz ]]; then
+	zcat "${file}" > ${dev}
+else
+	cp "${file}" ${dev}
+fi
+
+echo "$2 скопировано! $(date)"
+
+blockdev --flushbufs ${dev}
+
+echo "$2 готово!      $(date)"

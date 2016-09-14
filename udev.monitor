@@ -1,0 +1,65 @@
+#!/bin/bash
+
+if [ $# -eq 1 -a "$1" == "docmd" ]
+then
+	if [ -n "$cmd" ]
+	then
+		[ -x "$led" ] && $led start $port
+		#[ -x "$led" ] && { ( $led blink $port ) & blink=$!; }
+		[ -x "$led" ] && { $led blink $port & blink=$!; }
+		eval "$cmd"
+		[ -n "$blink" ] && kill $blink
+		[ -x "$led" ] && $led end $port
+	fi
+	exit 0
+fi
+
+d=$(dirname $0)
+rules=$d/rules
+led=$d/led
+n=$(basename $0)
+v=$ID_VENDOR_ID
+m=$ID_MODEL_ID
+
+if [ -f "$rules" -a -n "$v" -a -n "$m" ]
+then
+	port=$(echo "$DEVPATH" | sed -rn 's,^/devices/platform/soc/[^/]+/usb[^/]+/[^/]+/([^/]+)/.*,\1,p')
+	if [ -n "$port" ]
+	then
+		cmd=$(sed -rn "/^$v:$m /{s/[^ ]+ //;p;q}" "$rules")
+		if [ -n "$cmd" ] && grep -q "^$port " "$rules"
+		then
+			case "$ACTION" in
+				add)
+					logger -t $n "write $port"
+					[ -x "$led" ] && $led busy $port
+					export port n v m cmd led
+					echo "$0 docmd" | at now
+					;;
+				remove)
+					logger -t $n "free $port"
+					[ -x "$led" ] && $led free $port
+					;;
+				change)
+					logger -t $n "change $port"
+					;;
+				*)
+					logger -t $n "unknown action $ACTION"
+					;;
+			esac
+		else # другая флешка или другой порт
+			case "$ACTION" in
+				add)
+					logger -t $n "foreign $port"
+					[ -x "$led" ] && $led busy $port
+					;;
+				remove)
+					logger -t $n "free $port"
+					[ -x "$led" ] && $led free $port
+					;;
+			esac
+		fi
+	fi
+fi
+
+exit 0
