@@ -7,11 +7,13 @@ port=$2
 base=/sys/class/gpio
 rules=$(dirname $0)/rules
 
-[ -r "$rules" ] || { exit 1; }
+[ -r "$rules" ] || exit 1
 
 
-read ppp s0 s1 npins pin[1] pin[2] pin[3] < <(grep "^$port " "$rules")
-#echo ${pin[1]} ${pin[2]}
+read ppp s0 s1 npins pin[1] pin[2] pin[3] < <(grep "^$port " "$rules" | head -n 1)
+
+[ -n "$ppp" ] || exit 1
+
 if [ $npins -gt 2 ]; then npins=2; fi
 for i in $(seq 1 $npins); do
 	#echo ${pin[i]}
