@@ -16,74 +16,74 @@ read ppp s0 s1 npins pin[1] pin[2] pin[3] < <(grep "^$port " "$rules" | head -n 
 
 if [ $npins -gt 2 ]; then npins=2; fi
 for i in $(seq 1 $npins); do
-	#echo ${pin[i]}
-	if [ ! -d $base/gpio${pin[i]} ]; then
-		echo ${pin[i]} > $base/export
-		sleep 0.2
-		echo out > $base/gpio${pin[i]}/direction
-		echo $s0 > $base/gpio${pin[i]}/value
-	fi
+  #echo ${pin[i]}
+  if [ ! -d $base/gpio${pin[i]} ]; then
+    echo ${pin[i]} > $base/export
+    sleep 0.2
+    echo out > $base/gpio${pin[i]}/direction
+    echo $s0 > $base/gpio${pin[i]}/value
+  fi
 done
 
 case "$signal" in
-	busy)
-		case "$npins" in
-			1)
-				;;
-			2)
-				echo $s1 > $base/gpio${pin[1]}/value
-				echo $s0 > $base/gpio${pin[2]}/value
-				;;
-		esac
-		;;
-	free)
-		case "$npins" in
-			1)
-				;;
-			2)
-				echo $s0 > $base/gpio${pin[1]}/value
-				echo $s0 > $base/gpio${pin[2]}/value
-				;;
-		esac
-		;;
-	start)
-		case "$npins" in
-			1)
-				;;
-			2)
-				echo $s0 > $base/gpio${pin[1]}/value
-				echo $s1 > $base/gpio${pin[2]}/value
-				;;
-		esac
-		;;
-	end)
-		case "$npins" in
-			1)
-				;;
-			2)
-				echo $s1 > $base/gpio${pin[1]}/value
-				echo $s1 > $base/gpio${pin[2]}/value
-				;;
-		esac
-		;;
-	blink)
-		#exit
-		for i in $(seq 1 $npins)
-		do
-			value[$i]=$(cat $base/gpio${pin[$i]}/value)
-		done
-		while true
-		do
-			sleep 1
-			for i in $(seq 1 $npins)
-			do
-				[ ${value[$i]} -eq 1 ]; echo $? > $base/gpio${pin[$i]}/value
-			done
-			sleep 0.5
-			for i in $(seq 1 $npins)
-			do
-				echo ${value[$i]} > $base/gpio${pin[$i]}/value
-			done
-		done
-		;;
+  busy)
+    case "$npins" in
+      1)
+        ;;
+      2)
+        echo $s1 > $base/gpio${pin[1]}/value
+        echo $s0 > $base/gpio${pin[2]}/value
+        ;;
+    esac
+    ;;
+  free)
+    case "$npins" in
+      1)
+        ;;
+      2)
+        echo $s0 > $base/gpio${pin[1]}/value
+        echo $s0 > $base/gpio${pin[2]}/value
+        ;;
+    esac
+    ;;
+  start)
+    case "$npins" in
+      1)
+        ;;
+      2)
+        echo $s0 > $base/gpio${pin[1]}/value
+        echo $s1 > $base/gpio${pin[2]}/value
+        ;;
+    esac
+    ;;
+  end)
+    case "$npins" in
+      1)
+        ;;
+      2)
+        echo $s1 > $base/gpio${pin[1]}/value
+        echo $s1 > $base/gpio${pin[2]}/value
+        ;;
+    esac
+    ;;
+  blink)
+    #exit
+    for i in $(seq 1 $npins)
+    do
+      value[$i]=$(cat $base/gpio${pin[$i]}/value)
+    done
+    while true
+    do
+      sleep 1
+      for i in $(seq 1 $npins)
+      do
+        [ ${value[$i]} -eq 1 ]; echo $? > $base/gpio${pin[$i]}/value
+      done
+      sleep 0.5
+      for i in $(seq 1 $npins)
+      do
+        echo ${value[$i]} > $base/gpio${pin[$i]}/value
+      done
+    done
+    ;;
 esac
