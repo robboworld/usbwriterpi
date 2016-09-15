@@ -79,14 +79,32 @@ case "$signal" in
     esac
     ;;
   blink)
-    #exit
     for i in $(seq 1 $npins)
     do
       value[$i]=$(cat $base/gpio${pin[$i]}/value)
     done
     while true
     do
-      sleep 1
+      sleep 2
+      for i in $(seq 1 $npins)
+      do
+        [ ${value[$i]} -eq 1 ]; echo $? > $base/gpio${pin[$i]}/value
+      done
+      sleep 0.1
+      for i in $(seq 1 $npins)
+      do
+        echo ${value[$i]} > $base/gpio${pin[$i]}/value
+      done
+    done
+    ;;
+  error)
+    for i in $(seq 1 $npins)
+    do
+      value[$i]=$(cat $base/gpio${pin[$i]}/value)
+    done
+    while true
+    do
+      sleep 0.5
       for i in $(seq 1 $npins)
       do
         [ ${value[$i]} -eq 1 ]; echo $? > $base/gpio${pin[$i]}/value

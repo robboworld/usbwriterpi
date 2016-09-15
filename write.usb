@@ -2,6 +2,8 @@
 
 set -e
 
+trap 'r=$?; j=$(jobs -p); [ -z "$j" ] || kill $j; exit $r' EXIT
+
 usage() {
 	echo "использование: $0 файл устройство"
 	echo "устройство можно задать в любом виде:"
@@ -28,6 +30,12 @@ else
 	echo "ошибка: не обнаружено ни одно блочное устройство: /dev/sd${base} /dev/${base}"
 	usage
 	exit 1
+fi
+
+if [ -n "$n" -a -n "$port" ]
+then
+  pidfile=/var/run/$n.$port.pid
+  echo $$ >> $pidfile
 fi
 
 if [[ "${file}" == *.gz ]]; then

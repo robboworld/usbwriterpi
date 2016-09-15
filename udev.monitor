@@ -2,18 +2,39 @@
 
 if [ $# -eq 1 -a "$1" == "docmd" ]
 then
-  if [ -n "$cmd" ]
+  if [ -n "$cmd" -a -n "$n" -a -n "$port" ]
   then
+    pidfile=/var/run/$n.$port.pid
     [ -x "$led" ] && $led start $port
-    [ -x "$led" ] && { $led blink $port & blink=$!; }
+    [ -x "$led" ] && { $led blink $port & blink=$!; echo $blink >> $pidfile; }
     logger -t $n "start $port"
+    echo $$ >> $pidfile
     eval "$cmd"
-    logger -t $n "end $port"
-    [ -n "$blink" ] && kill $blink
-    [ -x "$led" ] && $led end $port
+    r=$?
+    [ -n "$blink" ] && { kill $blink; rm $pidfile; }
+    if [ "$r" == "0" ]
+    then
+      logger -t $n "end $port"
+      [ -x "$led" ] && $led end $port
+    else
+      logger -t $n "error $port $r"
+      [ -x "$led" ] && { $led error $port & error=$!; echo $error >> $pidfile; }
+    fi
   fi
   exit 0
 fi
+
+killport() {
+  if [ -n "$n" -a -n "$port" ]
+  then
+    pidfile=/var/run/$n.$port.pid
+    if [ -f "$pidfile" ]
+    then
+      kill $(cat $pidfile) &>/dev/null || :
+      rm $pidfile
+    fi
+  fi
+}
 
 d=$(dirname $0)
 rules=$d/rules
@@ -29,6 +50,7 @@ then
   then
     case "$ACTION" in
       add)
+        killport
         if [ -n "$v" -a -n "$m" ]
         then
           cmd=$(sed -rn "/^$v:$m /{s/[^ ]+ //;p;q}" "$rules")
@@ -45,6 +67,7 @@ then
         [ -x "$led" ] && $led busy $port
         ;;
       remove)
+        killport
         logger -t $n "free $port"
         [ -x "$led" ] && $led free $port
         ;;
