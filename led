@@ -29,6 +29,9 @@ case "$signal" in
   busy)
     case "$npins" in
       1)
+        echo $s1 > $base/gpio${pin[1]}/value
+        sleep 0.1
+        echo $s0 > $base/gpio${pin[1]}/value
         ;;
       2)
         echo $s1 > $base/gpio${pin[1]}/value
@@ -39,6 +42,7 @@ case "$signal" in
   free)
     case "$npins" in
       1)
+        echo $s0 > $base/gpio${pin[1]}/value
         ;;
       2)
         echo $s0 > $base/gpio${pin[1]}/value
@@ -49,6 +53,13 @@ case "$signal" in
   start)
     case "$npins" in
       1)
+        for i in 1 2 3
+        do
+          echo $s1 > $base/gpio${pin[1]}/value
+          sleep 0.1
+          echo $s0 > $base/gpio${pin[1]}/value
+          sleep 0.1
+        done
         ;;
       2)
         echo $s0 > $base/gpio${pin[1]}/value
@@ -59,6 +70,7 @@ case "$signal" in
   end)
     case "$npins" in
       1)
+        echo $s1 > $base/gpio${pin[1]}/value
         ;;
       2)
         echo $s1 > $base/gpio${pin[1]}/value
