@@ -36,8 +36,4 @@ else
 	cp "${file}" ${dev}
 fi
 
-echo "$2 скопировано! $(date)"
-
 blockdev --flushbufs ${dev}
-
-echo "$2 готово!      $(date)"
