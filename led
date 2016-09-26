@@ -136,4 +136,16 @@ case "$signal" in
       done
     done
     ;;
+  onlylog)
+    for i in $(seq 1 $npins)
+    do
+      echo $s0 > $base/gpio${pin[$i]}/value
+    done
+    for i in $(seq 1 $npins)
+    do
+      echo $s1 > $base/gpio${pin[$i]}/value
+      sleep 0.5
+      echo $s0 > $base/gpio${pin[$i]}/value
+    done
+    ;;
 esac

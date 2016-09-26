@@ -47,6 +47,7 @@ port=$(echo "$DEVPATH" | sed -rn 's,^/devices/platform/soc/[^/]+/usb[^/]+/[^/]+/
 if [ -f $d/onlylog ]
 then
   logger -t $n "onlylog: action=$ACTION devpath=$DEVPATH vid=$v pid=$m port=$port"
+  [ -x "$led" ] && $led onlylog $port
   exit 0
 fi
 
