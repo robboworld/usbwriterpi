@@ -42,10 +42,16 @@ led=$d/led
 n=$(basename $0)
 v=$ID_VENDOR_ID
 m=$ID_MODEL_ID
+port=$(echo "$DEVPATH" | sed -rn 's,^/devices/platform/soc/[^/]+/usb[^/]+/[^/]+/([^/]+)/.*,\1,p')
+
+if [ -f $d/onlylog ]
+then
+  logger -t $n "onlylog: action=$ACTION devpath=$DEVPATH vid=$v pid=$m port=$port"
+  exit 0
+fi
 
 if [ -f "$rules" ]
 then
-  port=$(echo "$DEVPATH" | sed -rn 's,^/devices/platform/soc/[^/]+/usb[^/]+/[^/]+/([^/]+)/.*,\1,p')
   if [ -n "$port" ]
   then
     case "$ACTION" in
