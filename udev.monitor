@@ -53,7 +53,7 @@ then
         killport
         if [ -n "$v" -a -n "$m" ]
         then
-          cmd=$(sed -rn "/^$v:$m /{s/[^ ]+ //;p;q}" "$rules")
+          cmd=$(sed -rn "/^ *([[:xdigit:]]{1,4}:[[:xdigit:]]{1,4} +)*$v:$m +/{s/^ *([[:xdigit:]]{1,4}:[[:xdigit:]]{1,4} +)+//p;q}" "$rules")
           if [ -n "$cmd" ] && grep -q "^$port " "$rules"
           then
             [ -x "$led" ] && $led busy $port
