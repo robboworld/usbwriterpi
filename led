@@ -14,7 +14,7 @@ read ppp s0 s1 npins pin[1] pin[2] pin[3] < <(grep "^$port " "$rules" | head -n 
 
 [ -n "$ppp" ] || exit 1
 
-if [ $npins -gt 2 ]; then npins=2; fi
+if [ $npins -gt 3 ]; then npins=3; fi
 for i in $(seq 1 $npins); do
   #echo ${pin[i]}
   if [ ! -d $base/gpio${pin[i]} ]; then
@@ -37,6 +37,11 @@ case "$signal" in
         echo $s1 > $base/gpio${pin[1]}/value
         echo $s0 > $base/gpio${pin[2]}/value
         ;;
+      3)
+        echo $s1 > $base/gpio${pin[1]}/value
+        echo $s0 > $base/gpio${pin[2]}/value
+        echo $s0 > $base/gpio${pin[3]}/value
+        ;;
     esac
     ;;
   free)
@@ -47,6 +52,11 @@ case "$signal" in
       2)
         echo $s0 > $base/gpio${pin[1]}/value
         echo $s0 > $base/gpio${pin[2]}/value
+        ;;
+      3)
+        echo $s0 > $base/gpio${pin[1]}/value
+        echo $s0 > $base/gpio${pin[2]}/value
+        echo $s0 > $base/gpio${pin[3]}/value
         ;;
     esac
     ;;
@@ -65,6 +75,11 @@ case "$signal" in
         echo $s0 > $base/gpio${pin[1]}/value
         echo $s1 > $base/gpio${pin[2]}/value
         ;;
+      3)
+        echo $s0 > $base/gpio${pin[1]}/value
+        echo $s1 > $base/gpio${pin[2]}/value
+        echo $s0 > $base/gpio${pin[3]}/value
+        ;;
     esac
     ;;
   end)
@@ -75,6 +90,11 @@ case "$signal" in
       2)
         echo $s1 > $base/gpio${pin[1]}/value
         echo $s1 > $base/gpio${pin[2]}/value
+        ;;
+      3)
+        echo $s0 > $base/gpio${pin[1]}/value
+        echo $s0 > $base/gpio${pin[2]}/value
+        echo $s1 > $base/gpio${pin[3]}/value
         ;;
     esac
     ;;
