@@ -55,9 +55,9 @@
 
 ##режим отладки
 
-если в каталоге `/var/local/usbwriter` создать файл `onlylog`, то вызов программы для записи не будет осуществляться, а все udev-события, генерируемые для блочных устройств, подключаемых (и отключаемых) к usb-портам, будут записываться в лог-файл (по умолчанию — `/var/log/messages` в виде:
+если в каталоге `/var/local/usbwriter` создать файл `onlylog`, то вызов программы для записи не будет осуществляться, а все udev-события, генерируемые для блочных устройств, подключаемых (и отключаемых) к usb-портам, будут записываться в лог-файл (по умолчанию — `/var/log/messages`) в виде:
 
-> Sep 27 17:40:25 raspberrypi udev.monitor: onlylog: action=add devpath=/devices/platform/soc/3f980000.usb/usb1/1-1/1-1.2/1-1.2:1.0/host12/target12:0:0/12:0:0:0/block/sda vid:pid=13fe:4200 port=1-1.2 devname=/dev/sda
+    Sep 27 17:40:25 raspberrypi udev.monitor: onlylog: action=add devpath=/devices/platform/soc/3f980000.usb/usb1/1-1/1-1.2/1-1.2:1.0/host12/target12:0:0/12:0:0:0/block/sda vid:pid=13fe:4200 port=1-1.2 devname=/dev/sda
 
 тут перечислены как полученные от *udev* переменные — `action`, `devpath`, `vid`, `pid`, `devname` — так и извлечённый из `devpath` идентификатор порта. если он пустой, то надо вручную подправить регулярное выражение в файле `udev.monitor` (строка, начинающаяся с `port=`).
 
