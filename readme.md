@@ -67,7 +67,9 @@
 
 ##индикация светодиодами (если подключены)
 
-<table>
+<style> table.customtable td {text-align: center;} </style>
+
+<table class="customtable">
   <tr>
     <th>состояние</th>
     <th>один индикатор</th>
